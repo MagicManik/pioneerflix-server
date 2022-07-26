@@ -1,4 +1,4 @@
-// server installation: express, cors, dotenv, mongodb, jsonwebtoken
+// server installed: express, cors, dotenv, mongodb, jsonwebtoken, stripe
 
 const express = require('express');
 const cors = require('cors');
