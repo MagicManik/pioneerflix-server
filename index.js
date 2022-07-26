@@ -21,7 +21,6 @@ async function run() {
         await client.connect();
         const englishMovieCollections = client.db("pioneer_flix").collection("english_movies");
         const banglaMovieCollections = client.db("pioneer_flix").collection("bangla_movies");
-        const paymentCollection = client.db("pioneer_flix").collection("payments");
 
 
 
