@@ -19,9 +19,10 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        const englishMovieCollections = client.db("pioneer_flix").collection("english_movies");
-        const banglaMovieCollections = client.db("pioneer_flix").collection("bangla_movies");
+        const videoCollection = client.db("pioneer_flix").collection("videos");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
+
+
 
 
 
