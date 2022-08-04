@@ -20,11 +20,55 @@ async function run() {
     try {
         await client.connect();
         const videoCollection = client.db("pioneer_flix").collection("videos");
+        const likeCollection = client.db("pioneer_flix").collection("likes");
+        const commentCollection = client.db("pioneer_flix").collection("comments");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
 
 
+        // videos APIs
+        app.get('/videos', async (req, res) => {
+            const query = {};
+            const cursor = videoCollection.find(query);
+            const videos = await cursor.toArray();
+            res.send(videos);
+        });
+
+        app.get('/video/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await videoCollection.findOne(query);
+            res.send(result);
+        });
 
 
+        // likes APIs
+        app.post('/like', async (req, res) => {
+            const like = req.body;
+            const result = await likeCollection.insertOne(like);
+            res.send(result);
+        })
+
+        app.get('/likes', async (req, res) => {
+            const query = {};
+            const cursor = likeCollection.find(query);
+            const likes = await cursor.toArray();
+            res.send(likes);
+        });
+
+
+        // comments APIs
+        app.post('/comment', async (req, res) => {
+            const item = req.body;
+            const result = await commentCollection.insertOne(item);
+            res.send(result);
+        });
+
+        app.get('/comments', async (req, res) => {
+            const query = {};
+            const cursor = commentCollection.find(query);
+            const comments = await cursor.toArray();
+            res.send(comments);
+        });
 
     }
 
