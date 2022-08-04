@@ -22,10 +22,6 @@ async function run() {
         const videoCollection = client.db("pioneer_flix").collection("videos");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
 
-
-
-
-
     }
 
     finally {
