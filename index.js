@@ -12,8 +12,8 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// new connection with mongodb
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ndvfqvy.mongodb.net/?retryWrites=true&w=majority`;
+// connection with mongodb
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.2tlvc.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run() {
@@ -22,6 +22,7 @@ async function run() {
         const videoCollection = client.db("pioneer_flix").collection("videos");
         const likeCollection = client.db("pioneer_flix").collection("likes");
         const commentCollection = client.db("pioneer_flix").collection("comments");
+        const userDataCollection = client.db("pioneer_flix").collection("userProfile");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
 
 
@@ -39,9 +40,7 @@ async function run() {
             const result = await videoCollection.findOne(query);
             res.send(result);
         });
-
-
-        // likes APIs
+// likes APIs
         app.post('/like', async (req, res) => {
             const like = req.body;
             const result = await likeCollection.insertOne(like);
@@ -69,6 +68,13 @@ async function run() {
             const comments = await cursor.toArray();
             res.send(comments);
         });
+
+        // userProfile for dashboard API -----------------{ mohiuddin }
+        app.post('/userProfile', async (req, res) => {
+            const userProfile = req.body;
+            const result = await userDataCollection.insertOne(userProfile);
+            res.send(result);
+        })
 
     }
 
