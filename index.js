@@ -12,7 +12,10 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// new connection with mongodb
+
+
+
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ndvfqvy.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -23,6 +26,7 @@ async function run() {
         const likeCollection = client.db("pioneer_flix").collection("likes");
         const commentCollection = client.db("pioneer_flix").collection("comments");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
+        const libraryCollection = client.db("pioneer_flix").collection("library");
 
 
         // videos APIs
@@ -54,8 +58,20 @@ async function run() {
             const likes = await cursor.toArray();
             res.send(likes);
         });
-
-
+        // library APIs
+        app.post('/library', async (req, res) => {
+            const item = req.body;
+            // console.log(item)
+            const result = await libraryCollection.insertOne(item);
+            res.send(result);
+        });
+        app.get("/library/:email", async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const cursor = await libraryCollection.find(filter).toArray();
+            // console.log(email)
+            res.send(cursor);
+          });
         // comments APIs
         app.post('/comment', async (req, res) => {
             const item = req.body;
