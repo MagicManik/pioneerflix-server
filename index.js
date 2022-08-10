@@ -69,7 +69,7 @@ async function run() {
             res.send(comments);
         });
 
-        // PUT userProfile for dashboard API -----------------{ mohiuddin }
+        // PUT userProfile by email for dashboard API -----------------{ mohiuddin }
         app.put('/userProfile/:email', async (req, res) => {
             const email = req.params.email;
             const userProfile = req.body;
@@ -80,8 +80,15 @@ async function run() {
             };
             const result = await userProfileCollection.updateOne(filter, updateDoc, options);
             res.send(result);
+        });
+
+        // GET userProfile by query for dashboard API -----------------{ mohiuddin }
+        app.get('/userProfile', async (req, res) => {
+            const email = req.query.email;
+            const query = { profileEmail: email };
+            const profile = await userProfileCollection.find(query).toArray();
+            res.send(profile);
         })
-        
 
     }
 
