@@ -65,7 +65,6 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const result = await likeCollection.deleteOne(query);
             res.send(result);
-            console.log(result)
         })
 
 
