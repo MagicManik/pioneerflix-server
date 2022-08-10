@@ -98,6 +98,19 @@ async function run() {
             res.send(result);
         })
 
+        // GET uploaded videos by user API --------------------{ mohiuddin }
+        app.get('/userUploadVideo', async (req, res) => {
+            const email = req.query.email;
+            const query = { uploader: email };
+            const result = await userUploadVideoCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        // GET all uploaded videos by user for admin to manage API --------------------{ mohiuddin }
+        app.get('/uploadedVideo', async (req, res) => {
+            const result = await userUploadVideoCollection.find().toArray();
+            res.send(result);
+        })
     }
 
     finally {
