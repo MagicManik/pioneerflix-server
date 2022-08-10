@@ -62,6 +62,7 @@ async function run() {
         // to delete or remove likes
         app.delete('/likes/:id', async (req, res) => {
             const id = req.params.id;
+            console.log(id)
             const query = { _id: ObjectId(id) };
             const result = await likeCollection.deleteOne(query);
             res.send(result);
