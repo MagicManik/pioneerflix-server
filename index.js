@@ -84,6 +84,21 @@ async function run() {
             res.send(comments);
         });
 
+
+
+        // get or find inventory data of user
+        app.get('/user', async (req, res) => {
+            const decodedEmail = req.decoded.email;
+            console.log(decodedEmail)
+            const email = req.query.email;
+            const cursor = inventoryCollection.find(query);
+            const user = await cursor.toArray();
+            res.send(user);
+        })
+
+
+
+
     }
 
     finally {
