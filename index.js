@@ -71,11 +71,11 @@ async function run() {
 
         // comments APIs / Manik Islam Mahi
         // to create or post comment
-        app.post('/comment', async (req, res) => {
-            const item = req.body;
-            const result = await commentCollection.insertOne(item);
-            res.send(result);
-        });
+        // app.post('/comment', async (req, res) => {
+        //     const item = req.body;
+        //     const result = await commentCollection.insertOne(item);
+        //     res.send(result);
+        // });
 
 
 
