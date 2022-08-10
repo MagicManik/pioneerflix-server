@@ -23,6 +23,7 @@ async function run() {
         const likeCollection = client.db("pioneer_flix").collection("likes");
         const commentCollection = client.db("pioneer_flix").collection("comments");
         const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
+        const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
 
 
@@ -88,6 +89,13 @@ async function run() {
             const query = { profileEmail: email };
             const profile = await userProfileCollection.find(query).toArray();
             res.send(profile);
+        })
+
+        // POST upload videos by user API --------------------{ mohiuddin }
+        app.post('/userUploadVideo', async (req, res) => {
+            const video = req.body;
+            const result = await userUploadVideoCollection.insertOne(video);
+            res.send(result);
         })
 
     }
