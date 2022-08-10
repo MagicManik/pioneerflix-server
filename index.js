@@ -13,7 +13,11 @@ app.use(cors());
 app.use(express.json());
 
 // new connection with mongodb
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ndvfqvy.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ndvfqvy.mongodb.net/?retryWrites=true&w=majority`;
+// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+// old connection with mongodb
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.2tlvc.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run() {
@@ -71,17 +75,11 @@ async function run() {
 
         // comments APIs / Manik Islam Mahi
         // to create or post comment
-        // app.post('/comment', async (req, res) => {
-        //     const item = req.body;
-        //     const result = await commentCollection.insertOne(item);
-        //     res.send(result);
-        // });
-
-        app.post('/kcss', async (req, res) => {
-            const query = {};
-        })
-
-
+        app.post('/comment', async (req, res) => {
+            const item = req.body;
+            const result = await commentCollection.insertOne(item);
+            res.send(result);
+        });
 
         // to read or get comments
         app.get('/comments', async (req, res) => {
