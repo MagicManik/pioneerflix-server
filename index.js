@@ -77,6 +77,8 @@ async function run() {
             res.send(result);
         });
 
+
+
         // to read or get comments
         app.get('/comments', async (req, res) => {
             const query = {};
