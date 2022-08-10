@@ -12,8 +12,8 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// connection with mongodb
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.2tlvc.mongodb.net/?retryWrites=true&w=majority`;
+// new connection with mongodb
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ndvfqvy.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run() {
@@ -22,7 +22,7 @@ async function run() {
         const videoCollection = client.db("pioneer_flix").collection("videos");
         const likeCollection = client.db("pioneer_flix").collection("likes");
         const commentCollection = client.db("pioneer_flix").collection("comments");
-        const userDataCollection = client.db("pioneer_flix").collection("userProfile");
+        const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
 
 
@@ -40,7 +40,7 @@ async function run() {
             const result = await videoCollection.findOne(query);
             res.send(result);
         });
-// likes APIs
+        // likes APIs
         app.post('/like', async (req, res) => {
             const like = req.body;
             const result = await likeCollection.insertOne(like);
@@ -69,12 +69,19 @@ async function run() {
             res.send(comments);
         });
 
-        // userProfile for dashboard API -----------------{ mohiuddin }
-        app.post('/userProfile', async (req, res) => {
+        // PUT userProfile for dashboard API -----------------{ mohiuddin }
+        app.put('/userProfile/:email', async (req, res) => {
+            const email = req.params.email;
             const userProfile = req.body;
-            const result = await userDataCollection.insertOne(userProfile);
+            const filter = { email: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: userProfile,
+            };
+            const result = await userProfileCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         })
+        
 
     }
 
