@@ -111,6 +111,13 @@ async function run() {
             const result = await userUploadVideoCollection.find().toArray();
             res.send(result);
         })
+
+        // DELETE userUploaded video delete from manageVideos API ---------------------{ mohiuddin }
+        app.delete('/uploadedVideo/:id', async (req, res) => {
+            const id = req.params.id
+            const result = await userUploadVideoCollection.deleteOne({ "_id": ObjectId(id) });
+            res.send(result)
+        })
     }
 
     finally {
