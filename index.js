@@ -102,7 +102,7 @@ async function run() {
         app.put('/userProfile/:email', async (req, res) => {
             const email = req.params.email;
             const userProfile = req.body;
-            const filter = { email: email };
+            const filter = { profileEmail: email };
             const options = { upsert: true };
             const updateDoc = {
                 $set: userProfile,
