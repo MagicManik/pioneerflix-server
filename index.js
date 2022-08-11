@@ -24,10 +24,13 @@ async function run() {
         const commentCollection = client.db("pioneer_flix").collection("comments");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
         const channelCollection = client.db("pioneer_flix").collection("channels");
+        const libraryCollection = client.db("pioneer_flix").collection("library");
+        const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
+
 
 
         // videos APIs
-        // to read or get videos || Manik Islam Mahi
+        // to read videos || Manik Islam Mahi
         app.get('/videos', async (req, res) => {
             const query = {};
             const cursor = videoCollection.find(query);
@@ -66,7 +69,7 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const result = await likeCollection.deleteOne(query);
             res.send(result);
-        })
+        });
 
 
         // comments APIs
@@ -85,7 +88,8 @@ async function run() {
             res.send(comments);
         });
 
-// Channel APIs
+
+        // Channel APIs
         // to read or get Channels || Md. Saiyadul Amin Akhand
         app.get('/channels', async (req, res) => {
             const query = {};
@@ -100,6 +104,37 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const result = await channelCollection.findOne(query);
             res.send(result);
+        });
+
+
+        // favorite video APIs by shihab
+        app.post('/favorite', async (req, res) => {
+            const item = req.body;
+            const result = await favoriteVideoCollection.insertOne(item);
+            res.send(result);
+        });
+
+        app.get("/favorite/:email", async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const cursor = await favoriteVideoCollection.find(filter).toArray();
+            // console.log(email)
+            res.send(cursor);
+        });
+
+        // watch history APIs by shihab
+        app.post('/library', async (req, res) => {
+            const item = req.body;
+            const result = await libraryCollection.insertOne(item);
+            res.send(result);
+        });
+
+        app.get("/library/:email", async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const cursor = await libraryCollection.find(filter).toArray();
+            // console.log(email)
+            res.send(cursor);
         });
 
     }
