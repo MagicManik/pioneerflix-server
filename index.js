@@ -23,6 +23,7 @@ async function run() {
         const likeCollection = client.db("pioneer_flix").collection("likes");
         const commentCollection = client.db("pioneer_flix").collection("comments");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
+        const channelCollection = client.db("pioneer_flix").collection("channels");
 
 
         // videos APIs
@@ -82,6 +83,23 @@ async function run() {
             const cursor = commentCollection.find(query);
             const comments = await cursor.toArray();
             res.send(comments);
+        });
+
+// Channel APIs
+        // to read or get Channels || Md. Saiyadul Amin Akhand
+        app.get('/channels', async (req, res) => {
+            const query = {};
+            const cursor = channelCollection.find(query);
+            const channels = await cursor.toArray();
+            res.send(channels);
+        });
+
+        // to read sigle Channel || Md. Saiyadul Amin Akhand
+        app.get('/channel/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await channelCollection.findOne(query);
+            res.send(result);
         });
 
     }
