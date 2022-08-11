@@ -96,6 +96,23 @@ async function run() {
             const query = { profileEmail: email };
             const profile = await userProfileCollection.find(query).toArray();
             res.send(profile);
+        });
+
+        // GET all user signUp and Profile data for admin role API -----------{ mohiuddin }
+        app.get('/allUserData', async (req, res) => {
+            const allUserData = await userProfileCollection.find().toArray();
+            res.send(allUserData);
+        });
+
+        // PUT make admin API ---------------------{ mohiuddin }
+        app.put('/allUserData/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { profileEmail: email };
+            const updateDoc = {
+                $set: { role: 'admin' },
+            };
+            const result = await userProfileCollection.updateOne(filter, updateDoc);
+            res.send(result);
         })
 
         // POST upload videos by user API --------------------{ mohiuddin }
