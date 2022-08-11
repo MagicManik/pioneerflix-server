@@ -95,7 +95,7 @@ async function run() {
         });
 
         // to read sigle Channel || Md. Saiyadul Amin Akhand
-        app.get('/channel/:id', async (req, res) => {
+        app.get('/channels/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
             const result = await channelCollection.findOne(query);
