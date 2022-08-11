@@ -70,10 +70,16 @@ async function run() {
             res.send(comments);
         });
 
-        // POST userData from signUp page API ----------------{ mohiuddin }
-        app.post('/userSignUp', async (req, res) => {
-            const userSignUpData = req.body;
-            const result = await userProfileCollection.insertOne(userSignUpData);
+        // PUT userData from signUp page API ----------------{ mohiuddin }
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { profileEmail: email };
+            const options = { upsert: true };
+            const updateDoc={
+                $set: user,
+            };
+            const result = await userProfileCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         })
 
