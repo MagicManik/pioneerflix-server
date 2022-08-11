@@ -70,6 +70,13 @@ async function run() {
             res.send(comments);
         });
 
+        // POST userData from signUp page API ----------------{ mohiuddin }
+        app.post('/userSignUp', async (req, res) => {
+            const userSignUpData = req.body;
+            const result = await userProfileCollection.insertOne(userSignUpData);
+            res.send(result);
+        })
+
         // PUT userProfile by email for dashboard API -----------------{ mohiuddin }
         app.put('/userProfile/:email', async (req, res) => {
             const email = req.params.email;
