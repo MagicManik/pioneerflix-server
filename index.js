@@ -58,10 +58,9 @@ async function run() {
             const likes = await cursor.toArray();
             res.send(likes);
         });
-        // library APIs
+        // watch history APIs
         app.post('/library', async (req, res) => {
             const item = req.body;
-            // console.log(item)
             const result = await libraryCollection.insertOne(item);
             res.send(result);
         });
@@ -72,6 +71,7 @@ async function run() {
             // console.log(email)
             res.send(cursor);
           });
+       
         // comments APIs
         app.post('/comment', async (req, res) => {
             const item = req.body;
