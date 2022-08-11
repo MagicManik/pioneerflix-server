@@ -24,6 +24,7 @@ async function run() {
         const commentCollection = client.db("pioneer_flix").collection("comments");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
         const libraryCollection = client.db("pioneer_flix").collection("library");
+        const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
 
 
         // videos APIs / Manik Islam Mahi
@@ -69,6 +70,20 @@ async function run() {
             const email = req.params.email;
             const filter = { email: email };
             const cursor = await libraryCollection.find(filter).toArray();
+            // console.log(email)
+            res.send(cursor);
+          });
+
+        // favorite video APIs by shihab
+        app.post('/favorite', async (req, res) => {
+            const item = req.body;
+            const result = await favoriteVideoCollection.insertOne(item);
+            res.send(result);
+        });
+        app.get("/favorite/:email", async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const cursor = await favoriteVideoCollection.find(filter).toArray();
             // console.log(email)
             res.send(cursor);
           });
