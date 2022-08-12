@@ -39,10 +39,12 @@ async function run() {
         const videoCollection = client.db("pioneer_flix").collection("videos");
         const likeCollection = client.db("pioneer_flix").collection("likes");
         const commentCollection = client.db("pioneer_flix").collection("comments");
-        const paymentCollection = client.db("pioneer_flix").collection("payments");
         const channelCollection = client.db("pioneer_flix").collection("channels");
         const libraryCollection = client.db("pioneer_flix").collection("library");
         const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
+        const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
+        const paymentCollection = client.db("pioneer_flix").collection("payments");
+        const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
 
 
 
@@ -187,7 +189,7 @@ async function run() {
             const query = { uploader: email };
             const result = await userUploadVideoCollection.find(query).toArray();
             res.send(result);
-        })
+        });
 
         // GET all uploaded videos by user for admin to manage API ------------------------------{ mohiuddin }
         app.get('/uploadedVideo', async (req, res) => {
