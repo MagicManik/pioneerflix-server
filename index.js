@@ -39,9 +39,12 @@ async function run() {
         const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
+        const libraryCollection = client.db("pioneer_flix").collection("library");
+        const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
 
 
         // videos APIs
+        // to read videos || Manik Islam Mahi
         app.get('/videos', async (req, res) => {
             const query = {};
             const cursor = videoCollection.find(query);
@@ -49,6 +52,7 @@ async function run() {
             res.send(videos);
         });
 
+        // to read sigle video || Manik Islam Mahi
         app.get('/video/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -56,12 +60,14 @@ async function run() {
             res.send(result);
         });
         // likes APIs
+        // to create like || Manik Islam Mahi
         app.post('/like', async (req, res) => {
             const like = req.body;
             const result = await likeCollection.insertOne(like);
             res.send(result);
         })
 
+        // to read like || Manik Islam Mahi
         app.get('/likes', async (req, res) => {
             const query = {};
             const cursor = likeCollection.find(query);
@@ -69,20 +75,31 @@ async function run() {
             res.send(likes);
         });
 
+        // to delete like || Manik Islam Mahi
+        app.delete('/likes/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await likeCollection.deleteOne(query);
+            res.send(result);
+        });
+
 
         // comments APIs
+        // to create comment || Manik Islam Mahi
         app.post('/comment', async (req, res) => {
             const item = req.body;
             const result = await commentCollection.insertOne(item);
             res.send(result);
         });
 
+        // to read or get comments || Manik Islam Mahi
         app.get('/comments', async (req, res) => {
             const query = {};
             const cursor = commentCollection.find(query);
             const comments = await cursor.toArray();
             res.send(comments);
         });
+
 
         // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
         app.put('/user/:email', async (req, res) => {
@@ -178,6 +195,37 @@ async function run() {
             const result = await userUploadVideoCollection.deleteOne({ "_id": ObjectId(id) });
             res.send(result)
         })
+
+        // favorite video APIs by shihab
+        app.post('/favorite', async (req, res) => {
+            const item = req.body;
+            const result = await favoriteVideoCollection.insertOne(item);
+            res.send(result);
+        });
+
+        app.get("/favorite/:email", async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const cursor = await favoriteVideoCollection.find(filter).toArray();
+            // console.log(email)
+            res.send(cursor);
+        });
+
+        // watch history APIs by shihab
+        app.post('/library', async (req, res) => {
+            const item = req.body;
+            const result = await libraryCollection.insertOne(item);
+            res.send(result);
+        });
+
+        app.get("/library/:email", async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const cursor = await libraryCollection.find(filter).toArray();
+            // console.log(email)
+            res.send(cursor);
+        });
+
     }
 
     finally {
