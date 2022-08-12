@@ -39,8 +39,10 @@ async function run() {
         const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
+        const channelCollection = client.db("pioneer_flix").collection("channels");
         const libraryCollection = client.db("pioneer_flix").collection("library");
         const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
+
 
 
         // videos APIs
@@ -101,6 +103,7 @@ async function run() {
         });
 
 
+<<<<<<< HEAD
         // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
@@ -195,6 +198,25 @@ async function run() {
             const result = await userUploadVideoCollection.deleteOne({ "_id": ObjectId(id) });
             res.send(result)
         })
+=======
+        // Channel APIs
+        // to read or get Channels || Md. Saiyadul Amin Akhand
+        app.get('/channels', async (req, res) => {
+            const query = {};
+            const cursor = channelCollection.find(query);
+            const channels = await cursor.toArray();
+            res.send(channels);
+        });
+
+        // to read sigle Channel || Md. Saiyadul Amin Akhand
+        app.get('/channels/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await channelCollection.findOne(query);
+            res.send(result);
+        });
+
+>>>>>>> bd7c2998369ab9362d4ef5cb35bba663a0824449
 
         // favorite video APIs by shihab
         app.post('/favorite', async (req, res) => {
