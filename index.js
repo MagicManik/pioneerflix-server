@@ -103,7 +103,6 @@ async function run() {
         });
 
 
-<<<<<<< HEAD
         // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
@@ -198,7 +197,7 @@ async function run() {
             const result = await userUploadVideoCollection.deleteOne({ "_id": ObjectId(id) });
             res.send(result)
         })
-=======
+
         // Channel APIs
         // to read or get Channels || Md. Saiyadul Amin Akhand
         app.get('/channels', async (req, res) => {
@@ -216,7 +215,6 @@ async function run() {
             res.send(result);
         });
 
->>>>>>> bd7c2998369ab9362d4ef5cb35bba663a0824449
 
         // favorite video APIs by shihab
         app.post('/favorite', async (req, res) => {
