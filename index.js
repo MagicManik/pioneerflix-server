@@ -16,31 +16,17 @@ app.use(express.json());
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ndvfqvy.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-function verifyJWT(req, res, next) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).send({ message: 'UnAuthorized access' });
-    }
-    const token = authHeader.split(' ')[1];
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
-        if (err) {
-            return res.status(403).send({ message: 'Forbidden access' })
-        }
-        req.decoded = decoded;
-        next();
-    })
-}
 async function run() {
     try {
         await client.connect();
         const videoCollection = client.db("pioneer_flix").collection("videos");
         const likeCollection = client.db("pioneer_flix").collection("likes");
         const commentCollection = client.db("pioneer_flix").collection("comments");
-        const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
-        const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
+        const channelCollection = client.db("pioneer_flix").collection("channels");
         const libraryCollection = client.db("pioneer_flix").collection("library");
         const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
+
 
 
         // videos APIs
@@ -59,6 +45,8 @@ async function run() {
             const result = await videoCollection.findOne(query);
             res.send(result);
         });
+
+
         // likes APIs
         // to create like || Manik Islam Mahi
         app.post('/like', async (req, res) => {
@@ -101,100 +89,23 @@ async function run() {
         });
 
 
-        // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
-        app.put('/user/:email', async (req, res) => {
-            const email = req.params.email;
-            const user = req.body;
-            const filter = { profileEmail: email };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: user,
-            };
-            const result = await userProfileCollection.updateOne(filter, updateDoc, options);
-            const token = jwt.sign({ profileEmail: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '3h' })
-            res.send({ result, token });
-        })
+        // Channel APIs
+        // to read or get Channels || Md. Saiyadul Amin Akhand
+        app.get('/channels', async (req, res) => {
+            const query = {};
+            const cursor = channelCollection.find(query);
+            const channels = await cursor.toArray();
+            res.send(channels);
+        });
 
-        // PUT userProfile by email for dashboard API -----------------------------------{ mohiuddin }
-        app.put('/userProfile/:email', async (req, res) => {
-            const email = req.params.email;
-            const userProfile = req.body;
-            const filter = { profileEmail: email };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: userProfile,
-            };
-            const result = await userProfileCollection.updateOne(filter, updateDoc, options);
+        // to read sigle Channel || Md. Saiyadul Amin Akhand
+        app.get('/channels/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await channelCollection.findOne(query);
             res.send(result);
         });
 
-        // GET userProfile by query for dashboard API -------------------------------------{ mohiuddin }
-        app.get('/userProfile', async (req, res) => {
-            const email = req.query.email;
-            const query = { profileEmail: email };
-            const profile = await userProfileCollection.find(query).toArray();
-            res.send(profile);
-        });
-
-        // GET all user signUp and Profile data for admin role API ---------------------------{ mohiuddin }
-        app.get('/allUserData', async (req, res) => {
-            const allUserData = await userProfileCollection.find().toArray();
-            res.send(allUserData);
-        });
-
-        // PUT make admin API ----------------------------------------------------------------{ mohiuddin }
-        app.put('/allUserData/admin/:email', verifyJWT, async (req, res) => {
-            const email = req.params.email;
-            const requester = req.decoded.email;
-            const requesterAccount = await userProfileCollection.findOne({ email: requester });
-            if (requesterAccount.role === 'admin') {
-                const filter = { profileEmail: email };
-                const updateDoc = {
-                    $set: { role: 'admin' },
-                };
-                const result = await userProfileCollection.updateOne(filter, updateDoc);
-                res.send(result);
-            }
-            else {
-                res.status(403).send({ message: 'forbidden' });
-            }
-        });
-
-        // GET admin for useAdmin API -------------------------------------------{ mohiuddin }
-        app.get('/admin/:email', async (req, res) => {
-            const email = req.params.email;
-            const user = await userProfileCollection.findOne({ profileEmail: email });
-            const isAdmin = user.role === 'admin';
-            res.send({ admin: isAdmin })
-        })
-
-        // POST upload videos by user API -----------------------------------------------------{ mohiuddin }
-        app.post('/userUploadVideo', async (req, res) => {
-            const video = req.body;
-            const result = await userUploadVideoCollection.insertOne(video);
-            res.send(result);
-        })
-
-        // GET uploaded videos by user API -----------------------------------------------------{ mohiuddin }
-        app.get('/userUploadVideo', async (req, res) => {
-            const email = req.query.email;
-            const query = { uploader: email };
-            const result = await userUploadVideoCollection.find(query).toArray();
-            res.send(result);
-        })
-
-        // GET all uploaded videos by user for admin to manage API ------------------------------{ mohiuddin }
-        app.get('/uploadedVideo', async (req, res) => {
-            const result = await userUploadVideoCollection.find().toArray();
-            res.send(result);
-        })
-
-        // DELETE userUploaded video delete from manageVideos API --------------------------------{ mohiuddin }
-        app.delete('/uploadedVideo/:id', async (req, res) => {
-            const id = req.params.id
-            const result = await userUploadVideoCollection.deleteOne({ "_id": ObjectId(id) });
-            res.send(result)
-        })
 
         // favorite video APIs by shihab
         app.post('/favorite', async (req, res) => {
