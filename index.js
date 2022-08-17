@@ -266,6 +266,13 @@ async function run() {
             const result = await BookingCollection.updateOne(filter, updateDoc, options);
             res.send(result);
         });
+
+        // GET UserBooking for paymentPage API -------------------------------------------{ mohiuddin }
+        app.get('/userBooking', async (req, res) => {
+            const email = req.query.email;
+            const userBookingData = await BookingCollection.find({ userEmail: email }).toArray();
+            res.send(userBookingData);
+        })
     }
 
     finally {
