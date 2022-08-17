@@ -44,6 +44,7 @@ async function run() {
         const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
         const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
+        const BookingCollection = client.db("pioneer_flix").collection("booking");
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
 
 
@@ -253,6 +254,18 @@ async function run() {
             res.send(cursor);
         });
 
+        // PUT userBooking in payments API ---------------------------------{ mohiuddin } 
+        app.put('/userBooking/:email', async (req, res) => {
+            const email = req.params.email;
+            const userBooking = req.body;
+            const filter = { userEmail: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: userBooking,
+            };
+            const result = await BookingCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
     }
 
     finally {
