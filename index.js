@@ -43,8 +43,10 @@ async function run() {
         const libraryCollection = client.db("pioneer_flix").collection("library");
         const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
         const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
-        const paymentCollection = client.db("pioneer_flix").collection("payments");
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
+        const BookingCollection = client.db("pioneer_flix").collection("booking");
+        const paymentCollection = client.db("pioneer_flix").collection("payments");
+        const reviewCollection = client.db("pioneer_flix").collection("reviews");
 
 
 
@@ -106,6 +108,15 @@ async function run() {
             const comments = await cursor.toArray();
             res.send(comments);
         });
+
+
+        // Reviews APIs
+        // create & update api
+        app.put('/reviews/:email', async (req, rese) => {
+            console.log(req.params.email);
+            // console.log(req);
+        })
+
 
 
 
@@ -176,6 +187,15 @@ async function run() {
             res.send({ admin: isAdmin })
         })
 
+        // ____________________________M_____________________________
+        // Video upload by Admin
+        app.post('/adminUploadVideo', async (req, res) => {
+            const video = req.body;
+            const result = await videoCollection.insertOne(video);
+            res.send(result);
+        });
+
+
         // POST upload videos by user API -----------------------------------------------------{ mohiuddin }
         app.post('/userUploadVideo', async (req, res) => {
             const video = req.body;
@@ -204,6 +224,41 @@ async function run() {
             res.send(result)
         })
 
+        // PUT userBooking in payments API ---------------------------------{ mohiuddin } 
+        app.put('/userBooking/:email', async (req, res) => {
+            const email = req.params.email;
+            const userBooking = req.body;
+            const filter = { userEmail: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: userBooking,
+            };
+            const result = await BookingCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
+        // GET UserBooking for paymentPage API -------------------------------------------{ mohiuddin }
+        app.get('/userBooking', async (req, res) => {
+            const email = req.query.email;
+            const userBookingData = await BookingCollection.find({ userEmail: email }).toArray();
+            res.send(userBookingData);
+        })
+
+        // POST for payment stripe API 
+        app.post("/create-payment-intent", async (req, res) => {
+            const booking = req.body;
+            const price = booking.price;
+            const amount = price * 100;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                payment_method_types: ['card']
+            });
+            res.send({ clientSecret: paymentIntent.client_secret })
+        })
+
+
 
         // Channel APIs
         // to read or get Channels || Md. Saiyadul Amin Akhand
@@ -221,6 +276,8 @@ async function run() {
             const result = await channelCollection.findOne(query);
             res.send(result);
         });
+
+
 
 
         // favorite video APIs by shihab
