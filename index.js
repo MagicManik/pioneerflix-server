@@ -187,14 +187,12 @@ async function run() {
             res.send({ admin: isAdmin })
         })
 
-        // ____________________________M_____________________________
         // Video upload by Admin
         app.post('/adminUploadVideo', async (req, res) => {
             const video = req.body;
             const result = await videoCollection.insertOne(video);
             res.send(result);
         });
-
 
         // POST upload videos by user API -----------------------------------------------------{ mohiuddin }
         app.post('/userUploadVideo', async (req, res) => {
