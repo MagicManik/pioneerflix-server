@@ -289,13 +289,6 @@ async function run() {
             });
             res.send({clientSecret: paymentIntent.client_secret})
         })
-
-        // POST upload videos by admin API -----------------------------------------------------{ mohiuddin }
-        // app.post('/adminUploadVideo', async (req, res) => {
-        //     const video = req.body;
-        //     const result = await videoCollection.insertOne(video);
-        //     res.send(result);
-        // })
     }
 
     finally {
