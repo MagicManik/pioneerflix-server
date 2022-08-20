@@ -5,6 +5,8 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -43,11 +45,9 @@ async function run() {
         const libraryCollection = client.db("pioneer_flix").collection("library");
         const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
         const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
-        const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
-        const BookingCollection = client.db("pioneer_flix").collection("booking");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
-        const reviewCollection = client.db("pioneer_flix").collection("reviews");
-
+        const BookingCollection = client.db("pioneer_flix").collection("booking");
+        const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
 
 
         // videos APIs
@@ -108,15 +108,6 @@ async function run() {
             const comments = await cursor.toArray();
             res.send(comments);
         });
-
-
-        // Reviews APIs
-        // create & update api
-        app.put('/reviews/:email', async (req, rese) => {
-            console.log(req.params.email);
-            // console.log(req);
-        })
-
 
 
 
@@ -187,13 +178,6 @@ async function run() {
             res.send({ admin: isAdmin })
         })
 
-        // Video upload by Admin
-        app.post('/adminUploadVideo', async (req, res) => {
-            const video = req.body;
-            const result = await videoCollection.insertOne(video);
-            res.send(result);
-        });
-
         // POST upload videos by user API -----------------------------------------------------{ mohiuddin }
         app.post('/userUploadVideo', async (req, res) => {
             const video = req.body;
@@ -215,12 +199,6 @@ async function run() {
             res.send(result);
         })
 
-        // DELETE userUploaded video delete from manageVideos API --------------------------------{ mohiuddin }
-        app.delete('/uploadedVideo/:id', async (req, res) => {
-            const id = req.params.id
-            const result = await userUploadVideoCollection.deleteOne({ "_id": ObjectId(id) });
-            res.send(result)
-        })
 
         // PUT userBooking in payments API ---------------------------------{ mohiuddin } 
         app.put('/userBooking/:email', async (req, res) => {
@@ -256,6 +234,12 @@ async function run() {
             res.send({ clientSecret: paymentIntent.client_secret })
         })
 
+        // DELETE userUploaded video delete from manageVideos API --------------------------------{ mohiuddin }
+        app.delete('/uploadedVideo/:id', async (req, res) => {
+            const id = req.params.id
+            const result = await userUploadVideoCollection.deleteOne({ "_id": ObjectId(id) });
+            res.send(result)
+        })
 
 
         // Channel APIs
@@ -274,8 +258,6 @@ async function run() {
             const result = await channelCollection.findOne(query);
             res.send(result);
         });
-
-
 
 
         // favorite video APIs by shihab
@@ -307,7 +289,6 @@ async function run() {
             // console.log(email)
             res.send(cursor);
         });
-
     }
 
     finally {
