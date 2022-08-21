@@ -26,6 +26,7 @@ async function run() {
         const channelCollection = client.db("pioneer_flix").collection("channels");
         const libraryCollection = client.db("pioneer_flix").collection("library");
         const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
+        const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
 
 
 
@@ -45,7 +46,13 @@ async function run() {
             const result = await videoCollection.findOne(query);
             res.send(result);
         });
-
+        // userUploadVideoCollection shihab
+        app.get('/uploadVideos', async (req, res) => {
+            const query = {};
+            const cursor = userUploadVideoCollection.find(query);
+            const videos = await cursor.toArray();
+            res.send(videos);
+        });
 
         // likes APIs
         // to create like || Manik Islam Mahi
