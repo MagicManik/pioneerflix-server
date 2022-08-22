@@ -5,12 +5,31 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
 app.use(cors());
 app.use(express.json());
+
+
+function verifyJWT(req, res, next) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).send({ message: 'UnAuthorized access' });
+    }
+    const token = authHeader.split(' ')[1];
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function (err, decoded) {
+        if (err) {
+            return res.status(403).send({ message: 'Forbidden access' })
+        }
+        req.decoded = decoded;
+        next();
+    })
+}
+
 
 // new connection with mongodb
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ndvfqvy.mongodb.net/?retryWrites=true&w=majority`;
@@ -22,12 +41,15 @@ async function run() {
         const videoCollection = client.db("pioneer_flix").collection("videos");
         const likeCollection = client.db("pioneer_flix").collection("likes");
         const commentCollection = client.db("pioneer_flix").collection("comments");
-        const paymentCollection = client.db("pioneer_flix").collection("payments");
         const channelCollection = client.db("pioneer_flix").collection("channels");
         const libraryCollection = client.db("pioneer_flix").collection("library");
         const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
+        const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
+        const paymentCollection = client.db("pioneer_flix").collection("payments");
+        const BookingCollection = client.db("pioneer_flix").collection("booking");
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
-
+        const ratingCollection = client.db("pioneer_flix").collection("ratings");
+        // const ratingCollection = client.db("pioneer_flix").collection("ratings");
 
 
         // videos APIs
@@ -46,13 +68,7 @@ async function run() {
             const result = await videoCollection.findOne(query);
             res.send(result);
         });
-        // userUploadVideoCollection shihab
-        app.get('/uploadVideos', async (req, res) => {
-            const query = {};
-            const cursor = userUploadVideoCollection.find(query);
-            const videos = await cursor.toArray();
-            res.send(videos);
-        });
+
 
         // likes APIs
         // to create like || Manik Islam Mahi
@@ -94,6 +110,163 @@ async function run() {
             const comments = await cursor.toArray();
             res.send(comments);
         });
+
+
+        // Rating APIs
+        // to create or put rating || Manik Islam Mahi
+        // app.put('/rating/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     console.log(email)
+        //     const updatedRating = req.body;
+        //     console.log(updatedRating)
+        //     const filter = { email: email };
+        //     const options = { upsert: true };
+        //     const updatedDoc = {
+        //         $set: updatedRating,
+        //     }
+        //     const result = await ratingCollection.updateOne(filter, updatedDoc, options);
+        //     res.send(result);
+        //     console.log(result);
+        // })
+
+
+
+        // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
+        app.put('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = req.body;
+            const filter = { profileEmail: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: user,
+            };
+            const result = await userProfileCollection.updateOne(filter, updateDoc, options);
+            const token = jwt.sign({ profileEmail: email }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '3h' })
+            res.send({ result, token });
+        })
+
+        // PUT userProfile by email for dashboard API -----------------------------------{ mohiuddin }
+        app.put('/userProfile/:email', async (req, res) => {
+            const email = req.params.email;
+            const userProfile = req.body;
+            const filter = { profileEmail: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: userProfile,
+            };
+            const result = await userProfileCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
+        // GET userProfile by query for dashboard API -------------------------------------{ mohiuddin }
+        app.get('/userProfile', async (req, res) => {
+            const email = req.query.email;
+            const query = { profileEmail: email };
+            const profile = await userProfileCollection.find(query).toArray();
+            res.send(profile);
+        });
+
+        // GET all user signUp and Profile data for admin role API ---------------------------{ mohiuddin }
+        app.get('/allUserData', async (req, res) => {
+            const allUserData = await userProfileCollection.find().toArray();
+            res.send(allUserData);
+        });
+
+        // PUT make admin API ----------------------------------------------------------------{ mohiuddin }
+        app.put('/allUserData/admin/:email', verifyJWT, async (req, res) => {
+            const email = req.params.email;
+            const requester = req.decoded.email;
+            const requesterAccount = await userProfileCollection.findOne({ email: requester });
+            if (requesterAccount.role === 'admin') {
+                const filter = { profileEmail: email };
+                const updateDoc = {
+                    $set: { role: 'admin' },
+                };
+                const result = await userProfileCollection.updateOne(filter, updateDoc);
+                res.send(result);
+            }
+            else {
+                res.status(403).send({ message: 'forbidden' });
+            }
+        });
+
+        // GET admin for useAdmin API -------------------------------------------{ mohiuddin }
+        app.get('/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await userProfileCollection.findOne({ profileEmail: email });
+            const isAdmin = user.role === 'admin';
+            res.send({ admin: isAdmin })
+        })
+
+        // Upload Video by Admin
+        app.post('/adminUploadVideo', async (req, res) => {
+            const uploadedVideo = req.body;
+            const result = await videoCollection.insertOne(uploadedVideo);
+            res.send(result);
+        })
+
+        // POST upload videos by user API -----------------------------------------------------{ mohiuddin }
+        app.post('/userUploadVideo', async (req, res) => {
+            const video = req.body;
+            const result = await userUploadVideoCollection.insertOne(video);
+            res.send(result);
+        })
+
+        // GET uploaded videos by user API -----------------------------------------------------{ mohiuddin }
+        app.get('/userUploadVideo', async (req, res) => {
+            const email = req.query.email;
+            const query = { uploader: email };
+            const result = await userUploadVideoCollection.find(query).toArray();
+            res.send(result);
+        });
+
+        // GET all uploaded videos by user for admin to manage API ------------------------------{ mohiuddin }
+        app.get('/uploadedVideo', async (req, res) => {
+            const result = await userUploadVideoCollection.find().toArray();
+            res.send(result);
+        })
+
+
+        // PUT userBooking in payments API ---------------------------------{ mohiuddin } 
+        app.put('/userBooking/:email', async (req, res) => {
+            const email = req.params.email;
+            const userBooking = req.body;
+            const filter = { userEmail: email };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: userBooking,
+            };
+            const result = await BookingCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        });
+
+        // GET UserBooking for paymentPage API -------------------------------------------{ mohiuddin }
+        app.get('/userBooking', async (req, res) => {
+            const email = req.query.email;
+            const userBookingData = await BookingCollection.find({ userEmail: email }).toArray();
+            res.send(userBookingData);
+        })
+
+        // POST for payment stripe API 
+        app.post("/create-payment-intent", async (req, res) => {
+            const booking = req.body;
+            const price = booking.price;
+            const amount = price * 100;
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: amount,
+                currency: "usd",
+                payment_method_types: ['card']
+            });
+            res.send({ clientSecret: paymentIntent.client_secret })
+        })
+
+        // DELETE userUploaded video delete from manageVideos API --------------------------------{ mohiuddin }
+        app.delete('/uploadedVideo/:id', async (req, res) => {
+            const id = req.params.id
+            const result = await userUploadVideoCollection.deleteOne({ "_id": ObjectId(id) });
+            res.send(result)
+        })
 
 
         // Channel APIs
@@ -143,7 +316,6 @@ async function run() {
             // console.log(email)
             res.send(cursor);
         });
-
     }
 
     finally {
