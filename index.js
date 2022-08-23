@@ -323,6 +323,13 @@ async function run() {
             const result = await videoCollection.insertOne(video);
             const result2 = await notificationCollection.insertOne(video);
             res.send(result);
+        });
+
+        // DELETE userUploaded video delete from manageVideos API ---------------{ mohiuddin }
+        app.delete('/uiVideo/:id', async (req, res) => {
+            const id = req.params.id
+            const result = await videoCollection.deleteOne({ "_id": ObjectId(id) });
+            res.send(result)
         })
     }
 
