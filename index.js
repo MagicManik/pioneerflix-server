@@ -49,7 +49,8 @@ async function run() {
         const BookingCollection = client.db("pioneer_flix").collection("booking");
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
         const notificationCollection = client.db("pioneer_flix").collection("notification");
-        
+        const ratingCollection = client.db("pioneer_flix").collection("ratings");
+        // const ratingCollection = client.db("pioneer_flix").collection("ratings");
 
         // videos APIs
         // to read videos || Manik Islam Mahi
@@ -109,6 +110,24 @@ async function run() {
             const comments = await cursor.toArray();
             res.send(comments);
         });
+
+
+        // Rating APIs
+        // to create or put rating || Manik Islam Mahi
+        // app.put('/rating/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     console.log(email)
+        //     const updatedRating = req.body;
+        //     console.log(updatedRating)
+        //     const filter = { email: email };
+        //     const options = { upsert: true };
+        //     const updatedDoc = {
+        //         $set: updatedRating,
+        //     }
+        //     const result = await ratingCollection.updateOne(filter, updatedDoc, options);
+        //     res.send(result);
+        //     console.log(result);
+        // })
 
 
 
@@ -177,6 +196,13 @@ async function run() {
             const user = await userProfileCollection.findOne({ profileEmail: email });
             const isAdmin = user.role === 'admin';
             res.send({ admin: isAdmin })
+        })
+
+        // Upload Video by Admin
+        app.post('/adminUploadVideo', async (req, res) => {
+            const uploadedVideo = req.body;
+            const result = await videoCollection.insertOne(uploadedVideo);
+            res.send(result);
         })
 
         // POST upload videos by user API -----------------------------------------------------{ mohiuddin }
