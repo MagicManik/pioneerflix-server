@@ -335,9 +335,7 @@ async function run() {
         // PATCH user transaction id API -----------------------------------------{ mohiuddin }
         app.patch('/booking/:id', async (req, res) => {
             const id = req.params.id;
-            console.log(id);
             const payment = req.body;
-            console.log(payment);
             const filter = { _id: ObjectId(id) };
             const updatedDoc = {
                 $set: {
@@ -348,6 +346,13 @@ async function run() {
             const result = await paymentCollection.insertOne(payment);
             const updatedOrder = await BookingCollection.updateOne(filter, updatedDoc);
             res.send(updatedOrder);
+        });
+
+        // get paid user from bookingCollection API---------------------------------{ mohiuddin }
+        app.get('/paidUser/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await BookingCollection.findOne({ userEmail: email });
+            res.send(user)
         })
     }
 
