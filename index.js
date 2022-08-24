@@ -48,9 +48,9 @@ async function run() {
         const paymentCollection = client.db("pioneer_flix").collection("payments");
         const BookingCollection = client.db("pioneer_flix").collection("booking");
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
+        const notificationCollection = client.db("pioneer_flix").collection("notification");
         const ratingCollection = client.db("pioneer_flix").collection("ratings");
         // const ratingCollection = client.db("pioneer_flix").collection("ratings");
-
 
         // videos APIs
         // to read videos || Manik Islam Mahi
@@ -247,7 +247,7 @@ async function run() {
             res.send(userBookingData);
         })
 
-        // POST for payment stripe API 
+        // POST for payment stripe API --------------------------------------{ mohiuddin }
         app.post("/create-payment-intent", async (req, res) => {
             const booking = req.body;
             const price = booking.price;
@@ -316,6 +316,21 @@ async function run() {
             // console.log(email)
             res.send(cursor);
         });
+
+        // final upload video by admin API -------------------------------------{ mohiuddin }
+        app.post('/finalUploadByAdmin', async (req, res) => {
+            const video = req.body;
+            const result = await videoCollection.insertOne(video);
+            const result2 = await notificationCollection.insertOne(video);
+            res.send(result);
+        });
+
+        // DELETE userUploaded video delete from manageVideos API ---------------{ mohiuddin }
+        app.delete('/uiVideo/:id', async (req, res) => {
+            const id = req.params.id
+            const result = await videoCollection.deleteOne({ "_id": ObjectId(id) });
+            res.send(result)
+        })
     }
 
     finally {
