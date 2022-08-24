@@ -227,7 +227,7 @@ async function run() {
         })
 
 
-        // PUT userBooking in payments API ---------------------------------{ mohiuddin } 
+        // PUT userBooking in payments API ---------------------------------------{ mohiuddin } 
         app.put('/userBooking/:email', async (req, res) => {
             const email = req.params.email;
             const userBooking = req.body;
@@ -317,7 +317,7 @@ async function run() {
             res.send(cursor);
         });
 
-        // final upload video by admin API -------------------------------------{ mohiuddin }
+        // POST final upload video by admin API -------------------------------------{ mohiuddin }
         app.post('/finalUploadByAdmin', async (req, res) => {
             const video = req.body;
             const result = await videoCollection.insertOne(video);
@@ -330,6 +330,24 @@ async function run() {
             const id = req.params.id
             const result = await videoCollection.deleteOne({ "_id": ObjectId(id) });
             res.send(result)
+        });
+
+        // PATCH user transaction id API -----------------------------------------{ mohiuddin }
+        app.patch('/booking/:id', async (req, res) => {
+            const id = req.params.id;
+            console.log(id);
+            const payment = req.body;
+            console.log(payment);
+            const filter = { _id: ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                }
+            }
+            const result = await paymentCollection.insertOne(payment);
+            const updatedOrder = await BookingCollection.updateOne(filter, updatedDoc);
+            res.send(updatedOrder);
         })
     }
 
