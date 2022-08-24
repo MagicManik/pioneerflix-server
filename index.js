@@ -110,7 +110,34 @@ async function run() {
             const comments = await cursor.toArray();
             res.send(comments);
         });
-        
+
+        // Rating APIs
+        // to create or put rating || Manik Islam Mahi
+        app.put('/rating/:email', async (req, res) => {
+            const email = req.params.email;
+            const id = req.body.id;
+            const updatedRating = req.body;
+
+            // ekhane sodhu matro id othoba sodhu email diye data upsert kora hocche na. borong duita condition diye tarpor data upsert kora hocche. It's a unique API for me!!
+            const filter = { id: id, email: email };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: updatedRating,
+            }
+            const result = await ratingCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+        // to read or get ratings || Manik Islam Mahi
+        app.get('/ratings/:id', async (req, res) => {
+            const id = req.params.id;
+            // ekhane ekjon user er rating read kora hocche na. borong ekhane video id diye multiple data read kora hocche. It's a unique API for me !!
+            const filter = { id: id };
+            const cursor = ratingCollection.find(filter);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
         // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
@@ -206,8 +233,7 @@ async function run() {
             res.send(result);
         })
 
-
-        // PUT userBooking in payments API ---------------------------------------{ mohiuddin } 
+        // PUT userBooking in payments API ---------------------------------{ mohiuddin } 
         app.put('/userBooking/:email', async (req, res) => {
             const email = req.params.email;
             const userBooking = req.body;
@@ -249,6 +275,7 @@ async function run() {
         })
 
 
+
         // Channel APIs
         // to read or get Channels || Md. Saiyadul Amin Akhand
         app.get('/channels', async (req, res) => {
@@ -265,6 +292,7 @@ async function run() {
             const result = await channelCollection.findOne(query);
             res.send(result);
         });
+
 
 
         // favorite video APIs by shihab
