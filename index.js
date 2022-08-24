@@ -49,7 +49,6 @@ async function run() {
         const BookingCollection = client.db("pioneer_flix").collection("booking");
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
         const ratingCollection = client.db("pioneer_flix").collection("ratings");
-        // const ratingCollection = client.db("pioneer_flix").collection("ratings");
 
 
         // videos APIs
@@ -112,22 +111,6 @@ async function run() {
         });
 
 
-        // Rating APIs
-        // to create or put rating || Manik Islam Mahi
-        // app.put('/rating/:email', async (req, res) => {
-        //     const email = req.params.email;
-        //     console.log(email)
-        //     const updatedRating = req.body;
-        //     console.log(updatedRating)
-        //     const filter = { email: email };
-        //     const options = { upsert: true };
-        //     const updatedDoc = {
-        //         $set: updatedRating,
-        //     }
-        //     const result = await ratingCollection.updateOne(filter, updatedDoc, options);
-        //     res.send(result);
-        //     console.log(result);
-        // })
 
 
 
