@@ -48,8 +48,8 @@ async function run() {
         const paymentCollection = client.db("pioneer_flix").collection("payments");
         const BookingCollection = client.db("pioneer_flix").collection("booking");
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
+        const notificationCollection = client.db("pioneer_flix").collection("notification");
         const ratingCollection = client.db("pioneer_flix").collection("ratings");
-
 
         // videos APIs
         // to read videos || Manik Islam Mahi
@@ -111,7 +111,31 @@ async function run() {
         });
 
 
+        // Rating APIs
+        // to create or put rating || Manik Islam Mahi
+        app.put('/rating/:email', async (req, res) => {
+            const email = req.params.email;
+            const id = req.body.id;
+            const updatedRating = req.body;
+            // ekhane sodhu matro id othoba sodhu email diye data upsert kora hocche na. borong duita condition diye tarpor data upsert kora hocche. It's a unique API for me!!
+            const filter = { id: id, email: email };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: updatedRating,
+            }
+            const result = await ratingCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
 
+        // to read or get ratings || Manik Islam Mahi
+        app.get('/ratings/:id', async (req, res) => {
+            const id = req.params.id;
+            // ekhane ekjon user er rating read kora hocche na. borong ekhane video id diye multiple data read kora hocche. It's a unique API for me !!
+            const filter = { id: id };
+            const cursor = ratingCollection.find(filter);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
 
 
         // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
@@ -230,7 +254,7 @@ async function run() {
             res.send(userBookingData);
         })
 
-        // POST for payment stripe API 
+        // POST for payment stripe API --------------------------------------{ mohiuddin }
         app.post("/create-payment-intent", async (req, res) => {
             const booking = req.body;
             const price = booking.price;
@@ -299,6 +323,21 @@ async function run() {
             // console.log(email)
             res.send(cursor);
         });
+
+        // final upload video by admin API -------------------------------------{ mohiuddin }
+        app.post('/finalUploadByAdmin', async (req, res) => {
+            const video = req.body;
+            const result = await videoCollection.insertOne(video);
+            const result2 = await notificationCollection.insertOne(video);
+            res.send(result);
+        });
+
+        // DELETE userUploaded video delete from manageVideos API ---------------{ mohiuddin }
+        app.delete('/uiVideo/:id', async (req, res) => {
+            const id = req.params.id
+            const result = await videoCollection.deleteOne({ "_id": ObjectId(id) });
+            res.send(result)
+        })
     }
 
     finally {
