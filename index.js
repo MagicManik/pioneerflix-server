@@ -110,27 +110,7 @@ async function run() {
             const comments = await cursor.toArray();
             res.send(comments);
         });
-
-
-        // Rating APIs
-        // to create or put rating || Manik Islam Mahi
-        // app.put('/rating/:email', async (req, res) => {
-        //     const email = req.params.email;
-        //     console.log(email)
-        //     const updatedRating = req.body;
-        //     console.log(updatedRating)
-        //     const filter = { email: email };
-        //     const options = { upsert: true };
-        //     const updatedDoc = {
-        //         $set: updatedRating,
-        //     }
-        //     const result = await ratingCollection.updateOne(filter, updatedDoc, options);
-        //     res.send(result);
-        //     console.log(result);
-        // })
-
-
-
+        
         // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
         app.put('/user/:email', async (req, res) => {
             const email = req.params.email;
