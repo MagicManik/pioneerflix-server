@@ -308,6 +308,11 @@ async function run() {
             const result = await libraryCollection.insertOne(item);
             res.send(result);
         });
+       // show notification api  by shihab
+     app.get('/notification', async (req, res) => {
+     const allNotification = await notificationCollection.find().toArray();
+     res.send(allNotification);
+    });
 
         app.get("/library/:email", async (req, res) => {
             const email = req.params.email;
