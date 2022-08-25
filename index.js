@@ -50,7 +50,7 @@ async function run() {
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
         const notificationCollection = client.db("pioneer_flix").collection("notification");
         const ratingCollection = client.db("pioneer_flix").collection("ratings");
-        // const ratingCollection = client.db("pioneer_flix").collection("ratings");
+
 
         // videos APIs
         // to read videos || Manik Islam Mahi
@@ -114,20 +114,31 @@ async function run() {
 
         // Rating APIs
         // to create or put rating || Manik Islam Mahi
-        // app.put('/rating/:email', async (req, res) => {
-        //     const email = req.params.email;
-        //     console.log(email)
-        //     const updatedRating = req.body;
-        //     console.log(updatedRating)
-        //     const filter = { email: email };
-        //     const options = { upsert: true };
-        //     const updatedDoc = {
-        //         $set: updatedRating,
-        //     }
-        //     const result = await ratingCollection.updateOne(filter, updatedDoc, options);
-        //     res.send(result);
-        //     console.log(result);
-        // })
+
+        app.put('/rating/:email', async (req, res) => {
+            const email = req.params.email;
+            const id = req.body.id;
+            const updatedRating = req.body;
+
+            // ekhane sodhu matro id othoba sodhu email diye data upsert kora hocche na. borong duita condition diye tarpor data upsert kora hocche. It's a unique API for me!!
+            const filter = { id: id, email: email };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: updatedRating,
+            }
+            const result = await ratingCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+        // to read or get ratings || Manik Islam Mahi
+        app.get('/ratings/:id', async (req, res) => {
+            const id = req.params.id;
+            // ekhane ekjon user er rating read kora hocche na. borong ekhane video id diye multiple data read kora hocche. It's a unique API for me !!
+            const filter = { id: id };
+            const cursor = ratingCollection.find(filter);
+            const result = await cursor.toArray();
+            res.send(result);
+        });
 
 
 
@@ -226,7 +237,6 @@ async function run() {
             res.send(result);
         })
 
-
         // PUT userBooking in payments API ---------------------------------{ mohiuddin } 
         app.put('/userBooking/:email', async (req, res) => {
             const email = req.params.email;
@@ -246,7 +256,6 @@ async function run() {
             const userBookingData = await BookingCollection.find({ userEmail: email }).toArray();
             res.send(userBookingData);
         })
-
         // POST for payment stripe API --------------------------------------{ mohiuddin }
         app.post("/create-payment-intent", async (req, res) => {
             const booking = req.body;
@@ -268,7 +277,6 @@ async function run() {
             res.send(result)
         })
 
-
         // Channel APIs
         // to read or get Channels || Md. Saiyadul Amin Akhand
         app.get('/channels', async (req, res) => {
@@ -285,6 +293,7 @@ async function run() {
             const result = await channelCollection.findOne(query);
             res.send(result);
         });
+
 
 
         // favorite video APIs by shihab
@@ -321,7 +330,6 @@ async function run() {
             // console.log(email)
             res.send(cursor);
         });
-
         // final upload video by admin API -------------------------------------{ mohiuddin }
         app.post('/finalUploadByAdmin', async (req, res) => {
             const video = req.body;
