@@ -50,7 +50,6 @@ async function run() {
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
         const notificationCollection = client.db("pioneer_flix").collection("notification");
         const ratingCollection = client.db("pioneer_flix").collection("ratings");
-        // const ratingCollection = client.db("pioneer_flix").collection("ratings");
 
         // videos APIs
         // to read videos || Manik Islam Mahi
@@ -113,6 +112,7 @@ async function run() {
 
         // Rating APIs
         // to create or put rating || Manik Islam Mahi
+
         app.put('/rating/:email', async (req, res) => {
             const email = req.params.email;
             const id = req.body.id;
@@ -253,7 +253,7 @@ async function run() {
             const userBookingData = await BookingCollection.find({ userEmail: email }).toArray();
             res.send(userBookingData);
         })
-
+        
         // POST for payment stripe API --------------------------------------{ mohiuddin }
         app.post("/create-payment-intent", async (req, res) => {
             const booking = req.body;
@@ -274,8 +274,6 @@ async function run() {
             const result = await userUploadVideoCollection.deleteOne({ "_id": ObjectId(id) });
             res.send(result)
         })
-
-
 
         // Channel APIs
         // to read or get Channels || Md. Saiyadul Amin Akhand
@@ -317,6 +315,11 @@ async function run() {
             const result = await libraryCollection.insertOne(item);
             res.send(result);
         });
+       // show notification api  by shihab
+     app.get('/notification', async (req, res) => {
+     const allNotification = await notificationCollection.find().toArray();
+     res.send(allNotification);
+    });
 
         app.get("/library/:email", async (req, res) => {
             const email = req.params.email;
@@ -326,12 +329,11 @@ async function run() {
             res.send(cursor);
         });
 
-        // POST final upload video by admin API -------------------------------------{ mohiuddin }
+        // final upload video by admin API -------------------------------------{ mohiuddin }
         app.post('/finalUploadByAdmin', async (req, res) => {
             const video = req.body;
             const result = await videoCollection.insertOne(video);
             const result2 = await notificationCollection.insertOne(video);
-            console.log(result2);
             res.send(result);
         });
 
