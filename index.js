@@ -253,7 +253,7 @@ async function run() {
             const userBookingData = await BookingCollection.find({ userEmail: email }).toArray();
             res.send(userBookingData);
         })
-        
+
         // POST for payment stripe API --------------------------------------{ mohiuddin }
         app.post("/create-payment-intent", async (req, res) => {
             const booking = req.body;
