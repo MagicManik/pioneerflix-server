@@ -110,7 +110,6 @@ async function run() {
             res.send(comments);
         });
 
-
         // Rating APIs
         // to create or put rating || Manik Islam Mahi
 
@@ -137,7 +136,6 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         });
-
 
         // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
         app.put('/user/:email', async (req, res) => {
@@ -206,10 +204,11 @@ async function run() {
             res.send({ admin: isAdmin })
         })
 
-        // Upload Video by Admin
+        // Upload Video by Admin API ---------------------------------------------{ mohiuddin }
         app.post('/adminUploadVideo', async (req, res) => {
             const uploadedVideo = req.body;
             const result = await videoCollection.insertOne(uploadedVideo);
+            const result2 = await notificationCollection.insertOne(uploadedVideo);
             res.send(result);
         })
 
@@ -254,7 +253,7 @@ async function run() {
             const userBookingData = await BookingCollection.find({ userEmail: email }).toArray();
             res.send(userBookingData);
         })
-
+        
         // POST for payment stripe API --------------------------------------{ mohiuddin }
         app.post("/create-payment-intent", async (req, res) => {
             const booking = req.body;
@@ -343,6 +342,29 @@ async function run() {
             const id = req.params.id
             const result = await videoCollection.deleteOne({ "_id": ObjectId(id) });
             res.send(result)
+        });
+
+        // PATCH user transaction id API -----------------------------------------{ mohiuddin }
+        app.patch('/booking/:id', async (req, res) => {
+            const id = req.params.id;
+            const payment = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                }
+            }
+            const result = await paymentCollection.insertOne(payment);
+            const updatedOrder = await BookingCollection.updateOne(filter, updatedDoc);
+            res.send(updatedOrder);
+        });
+
+        // get paid user from bookingCollection API---------------------------------{ mohiuddin }
+        app.get('/paidUser/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await BookingCollection.findOne({ userEmail: email });
+            res.send(user)
         })
     }
 
