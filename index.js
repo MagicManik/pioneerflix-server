@@ -113,6 +113,7 @@ async function run() {
 
         // Rating APIs
         // to create or put rating || Manik Islam Mahi
+
         app.put('/rating/:email', async (req, res) => {
             const email = req.params.email;
             const id = req.body.id;
@@ -314,6 +315,11 @@ async function run() {
             const item = req.body;
             const result = await libraryCollection.insertOne(item);
             res.send(result);
+        });
+        // show notification api  by shihab
+        app.get('/notification', async (req, res) => {
+            const allNotification = await notificationCollection.find().toArray();
+            res.send(allNotification);
         });
 
         app.get("/library/:email", async (req, res) => {
