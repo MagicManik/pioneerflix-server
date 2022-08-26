@@ -205,10 +205,11 @@ async function run() {
             res.send({ admin: isAdmin })
         })
 
-        // Upload Video by Admin
+        // Upload Video by Admin API ---------------------------------------------{ mohiuddin }
         app.post('/adminUploadVideo', async (req, res) => {
             const uploadedVideo = req.body;
             const result = await videoCollection.insertOne(uploadedVideo);
+            const result2 = await notificationCollection.insertOne(uploadedVideo);
             res.send(result);
         })
 
@@ -330,6 +331,7 @@ async function run() {
             const video = req.body;
             const result = await videoCollection.insertOne(video);
             const result2 = await notificationCollection.insertOne(video);
+            console.log(result2);
             res.send(result);
         });
 
