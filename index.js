@@ -117,7 +117,6 @@ async function run() {
             const email = req.params.email;
             const id = req.body.id;
             const updatedRating = req.body;
-
             // ekhane sodhu matro id othoba sodhu email diye data upsert kora hocche na. borong duita condition diye tarpor data upsert kora hocche. It's a unique API for me!!
             const filter = { id: id, email: email };
             const options = { upsert: true };
@@ -234,6 +233,7 @@ async function run() {
             res.send(result);
         })
 
+
         // PUT userBooking in payments API ---------------------------------{ mohiuddin } 
         app.put('/userBooking/:email', async (req, res) => {
             const email = req.params.email;
@@ -275,6 +275,7 @@ async function run() {
             res.send(result)
         })
 
+
         // Channel APIs
         // to read or get Channels || Md. Saiyadul Amin Akhand
         app.get('/channels', async (req, res) => {
@@ -291,7 +292,6 @@ async function run() {
             const result = await channelCollection.findOne(query);
             res.send(result);
         });
-
 
 
         // favorite video APIs by shihab
@@ -315,11 +315,11 @@ async function run() {
             const result = await libraryCollection.insertOne(item);
             res.send(result);
         });
-       // show notification api  by shihab
-     app.get('/notification', async (req, res) => {
-     const allNotification = await notificationCollection.find().toArray();
-     res.send(allNotification);
-    });
+        // show notification api  by shihab
+        app.get('/notification', async (req, res) => {
+            const allNotification = await notificationCollection.find().toArray();
+            res.send(allNotification);
+        });
 
         app.get("/library/:email", async (req, res) => {
             const email = req.params.email;
