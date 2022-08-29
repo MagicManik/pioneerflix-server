@@ -111,9 +111,9 @@ async function run() {
             res.send(comments);
         });
 
+
         // Rating APIs
         // to create or put rating || Manik Islam Mahi
-
         app.put('/rating/:email', async (req, res) => {
             const email = req.params.email;
             const id = req.body.id;
@@ -140,10 +140,9 @@ async function run() {
 
 
         //  My List APIs
-        // To Create Or PUT My List || Manik Islam Mahi
+        // to put or create my list || Manik Islam Mahi
         app.put('/mylist/:email', async (req, res) => {
             const email = req.params.email;
-            // console.log(email)
             const id = req.body.id;
             const UpdatedMyList = req.body;
             // duita condition sotto hole backend e data jabe na!!
@@ -156,6 +155,7 @@ async function run() {
             res.send(result);
         });
 
+        // To Read OR GET User My List Videos
         app.get('/mylist/:email', async (req, res) => {
             const email = req.params.email;
             const filter = { email: email };
@@ -163,11 +163,15 @@ async function run() {
             const mylist = await cursor.toArray();
             res.send(mylist);
 
+        });
+
+        // To Delete or Remove My List Video || Manik Islam Mahi
+        app.delete('/mylist/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await myListCollection.deleteOne(query);
+            res.send(result);
         })
-
-
-
-
 
 
         // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
