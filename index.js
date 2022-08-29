@@ -43,13 +43,14 @@ async function run() {
         const commentCollection = client.db("pioneer_flix").collection("comments");
         const channelCollection = client.db("pioneer_flix").collection("channels");
         const libraryCollection = client.db("pioneer_flix").collection("library");
-        const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
+        // const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
         const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
         const BookingCollection = client.db("pioneer_flix").collection("booking");
         const userUploadVideoCollection = client.db("pioneer_flix").collection("userUploadVideo");
         const notificationCollection = client.db("pioneer_flix").collection("notification");
         const ratingCollection = client.db("pioneer_flix").collection("ratings");
+        const myListCollection = client.db("pioneer_flix").collection('mylist');
 
         // videos APIs
         // to read videos || Manik Islam Mahi
@@ -136,6 +137,38 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
         });
+
+
+        //  My List APIs
+        // To Create Or PUT My List || Manik Islam Mahi
+        app.put('/mylist/:email', async (req, res) => {
+            const email = req.params.email;
+            // console.log(email)
+            const id = req.body.id;
+            const UpdatedMyList = req.body;
+            // duita condition sotto hole backend e data jabe na!!
+            const filter = { id: id, email: email };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: UpdatedMyList,
+            }
+            const result = await myListCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+        app.get('/mylist/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const cursor = myListCollection.find(filter);
+            const mylist = await cursor.toArray();
+            res.send(mylist);
+
+        })
+
+
+
+
+
 
         // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
         app.put('/user/:email', async (req, res) => {
@@ -295,19 +328,18 @@ async function run() {
 
 
         // favorite video APIs by shihab
-        app.post('/favorite', async (req, res) => {
-            const item = req.body;
-            const result = await favoriteVideoCollection.insertOne(item);
-            res.send(result);
-        });
+        // app.post('/favorite', async (req, res) => {
+        //     const item = req.body;
+        //     const result = await favoriteVideoCollection.insertOne(item);
+        //     res.send(result);
+        // });
 
-        app.get("/favorite/:email", async (req, res) => {
-            const email = req.params.email;
-            const filter = { email: email };
-            const cursor = await favoriteVideoCollection.find(filter).toArray();
-            // console.log(email)
-            res.send(cursor);
-        });
+        // app.get("/favorite/:email", async (req, res) => {
+        //     const email = req.params.email;
+        //     const filter = { email: email };
+        //     const cursor = await favoriteVideoCollection.find(filter).toArray();
+        //     res.send(cursor);
+        // });
 
         // watch history APIs by shihab
         app.post('/library', async (req, res) => {
