@@ -42,7 +42,8 @@ async function run() {
         const likeCollection = client.db("pioneer_flix").collection("likes");
         const commentCollection = client.db("pioneer_flix").collection("comments");
         const channelCollection = client.db("pioneer_flix").collection("channels");
-        const libraryCollection = client.db("pioneer_flix").collection("library");
+        const watchListCollection = client.db("pioneer_flix").collection("watchlist");
+        // const libraryCollection = client.db("pioneer_flix").collection("library");
         // const favoriteVideoCollection = client.db("pioneer_flix").collection("favoriteVideo");
         const userProfileCollection = client.db("pioneer_flix").collection("userProfile");
         const paymentCollection = client.db("pioneer_flix").collection("payments");
@@ -155,14 +156,13 @@ async function run() {
             res.send(result);
         });
 
-        // To Read OR GET User My List Videos
+        // to read or get user my list videos || Manik Islam Mahi
         app.get('/mylist/:email', async (req, res) => {
             const email = req.params.email;
             const filter = { email: email };
             const cursor = myListCollection.find(filter);
             const mylist = await cursor.toArray();
             res.send(mylist);
-
         });
 
         // To Delete or Remove My List Video || Manik Islam Mahi
@@ -171,7 +171,34 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const result = await myListCollection.deleteOne(query);
             res.send(result);
-        })
+        });
+
+
+        // create or put user's watch list || Manik Islam Mahi
+        // to create or put watch list
+        app.put('/watchlist/:id', async (req, res) => {
+            const id = req.params.id;
+            // console.log(id);
+            const email = req.body.email;
+            const updatedWatchList = req.body;
+            console.log(updatedWatchList);
+            const filter = { id: id, email: email };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: updatedWatchList
+            }
+            const result = await watchListCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
+        // to read or get user's watched videos || Manik Islam Mahi
+        app.get('/watched/:email', async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email };
+            const cursor = watchListCollection.find(filter);
+            const watched = await cursor.toArray();
+            res.send(watched);
+        });
 
 
         // PUT userData from useToken, signUp and googleSignIn page API ----------------{ mohiuddin }
@@ -346,24 +373,24 @@ async function run() {
         // });
 
         // watch history APIs by shihab
-        app.post('/library', async (req, res) => {
-            const item = req.body;
-            const result = await libraryCollection.insertOne(item);
-            res.send(result);
-        });
+        // app.post('/library', async (req, res) => {
+        //     const item = req.body;
+        //     const result = await libraryCollection.insertOne(item);
+        //     res.send(result);
+        // });
+
         // show notification api  by shihab
         app.get('/notification', async (req, res) => {
             const allNotification = await notificationCollection.find().toArray();
             res.send(allNotification);
         });
 
-        app.get("/library/:email", async (req, res) => {
-            const email = req.params.email;
-            const filter = { email: email };
-            const cursor = await libraryCollection.find(filter).toArray();
-            // console.log(email)
-            res.send(cursor);
-        });
+        // app.get("/library/:email", async (req, res) => {
+        //     const email = req.params.email;
+        //     const filter = { email: email };
+        //     const cursor = await libraryCollection.find(filter).toArray();
+        //     res.send(cursor);
+        // });
 
         // final upload video by admin API -------------------------------------{ mohiuddin }
         app.post('/finalUploadByAdmin', async (req, res) => {
