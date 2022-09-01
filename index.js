@@ -181,7 +181,7 @@ async function run() {
             // console.log(id);
             const email = req.body.email;
             const updatedWatchList = req.body;
-            console.log(updatedWatchList);
+            // console.log(updatedWatchList);
             const filter = { id: id, email: email };
             const options = { upsert: true };
             const updatedDoc = {
