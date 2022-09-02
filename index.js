@@ -339,7 +339,6 @@ async function run() {
             res.send(result)
         })
 
-
         // Channel APIs
         // to read or get Channels || Md. Saiyadul Amin Akhand
         app.get('/channels', async (req, res) => {
@@ -428,7 +427,15 @@ async function run() {
             const email = req.params.email;
             const user = await BookingCollection.findOne({ userEmail: email });
             res.send(user)
-        })
+        });
+
+        // GET uploaded videos by admin API -----------------------------------------------------{ mohiuddin }
+        app.get('/adminUploadVideo', async (req, res) => {
+            const email = req.query.email;
+            const query = { uploader: email };
+            const result = await videoCollection.find(query).toArray();
+            res.send(result);
+        });
     }
 
     finally {
